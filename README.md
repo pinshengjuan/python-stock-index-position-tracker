@@ -5,7 +5,7 @@ A Python script to track and display the closing prices and daily percentage cha
 ## Features
 
 - Fetches recent closing prices for major indices: Dow Jones (^DJI), S&P 500 (^SPX), NASDAQ (^IXIC), and SOX (^SOX)
-- Calculates and displays daily percentage and absolute changes for each index
+- Calculates and displays daily percentage changes for each index
 - Prints closing prices for user-specified stock tickers
 - Uses [yfinance](https://github.com/ranaroussi/yfinance) for data retrieval
 - Loads ticker list from a `.env` file for easy configuration
@@ -25,15 +25,20 @@ pip install yfinance numpy python-dotenv
 
 ## Usage
 
-1. Create a `.env` file in the project directory with your stock tickers, e.g.:
+1. Create a `.env` file in the project directory with your stock tickers and fetch days, e.g.:
     ```
     TICKER_LIST=AAPL,MSFT,GOOGL
+    FETCH_DAYS=5
     ```
-
-2. Run the script:
+2. Run the script to get the closing price for latest date:
     ```sh
     python app.py
     ```
+    or run the script with an argument in YYYY-MM-DD format to get the closing price for the requested date:
+    ```sh
+    python app.py 2025-06-30
+    ```
+    Note that the requested date must not exceed the range defined by FETCH_DAYS in the `.env` file.
 
 ## Output
 

@@ -1,60 +1,45 @@
 import os
-import numpy as np
-import yfinance as yf
-from datetime import datetime, timedelta
-from dotenv import load_dotenv
-
-# Load environment variables from .env file
-load_dotenv()
+from utils import load_config, get_requested_date, get_close_price
 
 def calc_change_percentage(df_indices):
     """
-    Calculate the change in percentage and absolute value for stock indices.
+    Calculate the percentage change for major stock indices.
     Args:
-        df_indices (DataFrame): DataFrame containing stock indices data.
+        df_indices (DataFrame): DataFrame containing close prices of indices.
     Returns:
-        DataFrame: DataFrame with additional columns for change in percentage and absolute value.
+        DataFrame: DataFrame with additional columns for percentage change.
     """
-    change = df_indices['Close'].diff().iloc[-1]
-    last_date = df_indices.index[-1]
     indices_list = ['^DJI', '^SPX', '^IXIC', '^SOX']
 
-    change_percentage = df_indices['Close'].pct_change().iloc[-1] * 100
+    change_percentage = (df_indices['Close'].pct_change() * 100).round(2).astype(str) + '%'
     for idx in indices_list:
-        df_indices.loc[last_date, ('Change$', idx)]  = np.round(change[idx], 2)
-        df_indices.loc[last_date, ('Change%', idx)]  = f"{np.round(change_percentage[idx], 2)}%"
-
-    df_indices['Close'] = np.round(df_indices['Close'],    2)
+        df_indices.loc[df_indices.index, ('Change%', idx)] = change_percentage.loc[df_indices.index, idx]
     return df_indices
 
-def get_close_price(tickers, day):
+def print_position_close_price(req_date, fetch_days):
     """
-    Fetch the close price of given tickers for the last 'day' days.
-    
+    Print the close price of the user's stock positions.
     Args:
-        tickers (list): List of stock tickers.
-        day (int): Number of days to look back.
+        req_date (int): Requested date for fetching data.
+        fetch_days (int): Number of days to look back for fetching data.
     Returns:
-        DataFrame: Close prices of the tickers.
-    """
-    end_date = datetime.now()
-    start_date = end_date - timedelta(days=day)
-    stock = yf.Tickers(tickers)
-    df = stock.history(start=start_date, end=end_date)
-    return df
-
-def print_position_close_price():
-    """
-    Print the close price of stocks in the user's position.
+        None
     """
     ticker_list = os.getenv('TICKER_LIST')
     tickers = ticker_list.split(',')
-    df_tickers = get_close_price(tickers, 5)
-    print(np.round(df_tickers['Close'].iloc[-1], 2))
+    df_tickers = get_close_price(tickers, fetch_days)
+    if req_date == -1:
+        req_date = str(df_tickers.index[-1].date())
+    print(df_tickers.loc[req_date, ('Close', tickers)].round(2))
 
-def print_indices_close_price():
+def print_indices_close_price(req_date, fetch_days):
     """
-    Print the close price and change percentage of major indices.
+    Print the close price and change percentage of major stock indices.
+    Args:
+        req_date (int): Requested date for fetching data.
+        fetch_days (int): Number of days to look back for fetching data.
+    Returns:
+        None
     """
     indices = ['^DJI', '^SPX', '^IXIC', '^SOX']
     selected_columns = [
@@ -67,20 +52,26 @@ def print_indices_close_price():
         ('Close', '^SOX'),
         ('Change%', '^SOX'),
     ]
-    df_indices = get_close_price(indices, 5)
+    df_indices = get_close_price(indices, fetch_days)
+    if req_date == -1:
+        req_date = str(df_indices.index[-1].date())
     df_indices = calc_change_percentage(df_indices)
-    last_row = df_indices[selected_columns].iloc[-1]
+    req_row = df_indices.loc[req_date, selected_columns].round(2)
     for idx in indices:
-        close = last_row[('Close', idx)]
-        change = last_row[('Change%', idx)]
+        close = req_row[('Close', idx)]
+        change = req_row[('Change%', idx)]
         print(f"{idx:<7} {close:>10.2f} {change:>8}")
 
 def main():
     """
     Main function to execute the script.
     """
-    print_position_close_price()
-    print_indices_close_price()
+    config = load_config()
+    fetch_days = config['FETCH_DAYS']
+    req_date = get_requested_date(fetch_days)
+
+    print_position_close_price(req_date, fetch_days)
+    print_indices_close_price(req_date, fetch_days)
 
 
 if __name__ == '__main__':
