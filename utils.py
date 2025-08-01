@@ -16,6 +16,7 @@ def load_config() -> dict[str, Any]:
     """
     return {
         'TICKER_LIST': os.getenv('TICKER_LIST', 'GOOGL'),
+        'INDEX_LIST': os.getenv('INDEX_LIST', '^DJI'),
         'FETCH_DAYS': int(os.getenv('DAYS', 60)),
     }
 
