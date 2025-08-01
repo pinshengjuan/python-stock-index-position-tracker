@@ -46,8 +46,8 @@ def main():
     config = load_config()
 
     fetch_days = config['FETCH_DAYS']
-    tickers = config['TICKER_LIST'].split(',')
-    indices = config['INDEX_LIST'].split(',')
+    tickers = config['TICKER_LIST'].upper().split(',')
+    indices = config['INDEX_LIST'].upper().split(',')
 
     watchlist = [tickers, indices]
 
