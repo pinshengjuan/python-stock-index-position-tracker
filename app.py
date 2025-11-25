@@ -1,4 +1,5 @@
 import os
+import gc
 from utils import load_config, get_requested_date, get_close_price
 
 def calc_change_percentage(df, ticker_list):
@@ -38,6 +39,8 @@ def print_result(tickers, req_date, fetch_days):
         close = req_row[('Close', idx)]
         change = req_row[('Change%', idx)]
         print(f"{idx:<7} {close:>10.2f} {change:>8}")
+    del df
+    gc.collect()
 
 def main():
     """
