@@ -1,6 +1,6 @@
 import os
 import gc
-from utils import load_config, get_requested_date, get_close_price
+from utils import load_config, color_text, make_pretty_date, get_requested_date, get_close_price
 
 def calc_change_percentage(df, ticker_list):
     """
@@ -41,22 +41,27 @@ def print_result(tickers, req_date, fetch_days):
         req_date = f'{req_date:%Y-%m-%d}'
     
     """Print requested date close price and change%"""
-    shown_req_date = "******* [{}] *******".format(req_date)
+    pretty_date = make_pretty_date(req_date)
     try:
         req_row = df.loc[req_date, selected_columns].round(2)
     except KeyError:
-        print(shown_req_date)
-        print("No data available for the requested date.\n")
+        print(f"No data available for {req_date}")
         del df
         gc.collect()
         return
-    print(shown_req_date)
-    req_row = df.loc[req_date, selected_columns].round(2)
+    print(f'\n{pretty_date}')
+    print('=' * 45)
+
+    # Header
+    print(f"{'Ticker':<8} {'Close':>12} {'Change %':>12}")
+    print('-' * 45)
     for idx in tickers:
         close = req_row[('Close', idx)]
         change = req_row[('Change%', idx)]
-        print(f"{idx:<7} {close:>10.2f} {change:>8}")
-    print("\r")
+        change_str = f'{change:+.2f}%'
+        change_str = color_text(change_str, change)
+        print(f'{idx:<8} {close:>12.2f} {change_str}')
+    print('=' * 45)
     del df
     gc.collect()
 

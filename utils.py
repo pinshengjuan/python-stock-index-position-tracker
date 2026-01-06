@@ -20,6 +20,34 @@ def load_config() -> dict[str, Any]:
         'FETCH_DAYS': int(os.getenv('DAYS', 60)),
     }
 
+def make_pretty_date(date_str: str) -> str:
+    """
+    Convert a date string from YYYY-MM-DD format to a more human-readable format.
+    Args:
+        date_str (str): The date string in YYYY-MM-DD format.
+    Returns:
+        str: The date string in a more human-readable format.
+    """
+    date_obj = datetime.strptime(date_str, '%Y-%m-%d')
+    pretty_date = date_obj.strftime('%B %d, %Y')
+    return pretty_date
+
+def color_text(text: str, number: float) -> str:
+    """
+    Color the text based on the number's value.
+    Args:
+        text (str): The text to color.
+        number (float): The number to evaluate.
+    Returns:
+        str: The colored text.
+    """
+    if number > 0:
+        return f"\033[92m{text:>10}\033[0m"  # Green
+    elif number < 0:
+        return f"\033[91m{text:>10}\033[0m"  # Red
+    else:
+        return f"{text:>10}"
+
 def get_requested_date(fetch_days):
     """
     Get the requested date for fetching stock data.
