@@ -41,6 +41,7 @@ def print_result(tickers, req_date, fetch_days):
         close = req_row[('Close', idx)]
         change = req_row[('Change%', idx)]
         print(f"{idx:<7} {close:>10.2f} {change:>8}")
+    print("\r")
     del df
     gc.collect()
 
