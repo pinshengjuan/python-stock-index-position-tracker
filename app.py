@@ -35,6 +35,7 @@ def print_result(tickers, req_date, fetch_days):
     df = calc_change_percentage(df, tickers)
     if req_date == -1:
         req_date = str(df.index[-1].date())
+    print("******* [" + req_date + "] *******")
     req_row = df.loc[req_date, selected_columns].round(2)
     for idx in tickers:
         close = req_row[('Close', idx)]
