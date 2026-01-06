@@ -36,7 +36,6 @@ def get_requested_date(fetch_days):
         sys.exit()
     elif len(sys.argv) == 2:
         try:
-            datetime.strptime(sys.argv[1], "%Y-%m-%d")
             req_date = datetime.strptime(sys.argv[1], "%Y-%m-%d")
             now = datetime.now()
             start = now - timedelta(days=fetch_days)
