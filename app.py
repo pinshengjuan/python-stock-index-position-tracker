@@ -42,6 +42,15 @@ def print_result(tickers, req_date, fetch_days):
     
     """Print requested date close price and change%"""
     shown_req_date = "******* [{}] *******".format(req_date)
+    try:
+        req_row = df.loc[req_date, selected_columns].round(2)
+    except KeyError:
+        print(shown_req_date)
+        print("No data available for the requested date.\n")
+        del df
+        gc.collect()
+        return
+    print(shown_req_date)
     req_row = df.loc[req_date, selected_columns].round(2)
     for idx in tickers:
         close = req_row[('Close', idx)]
