@@ -33,9 +33,15 @@ def print_result(tickers, req_date, fetch_days):
         selected_columns.append(('Change%', index))
     df = get_close_price(tickers, fetch_days)
     df = calc_change_percentage(df, tickers)
+
+    """Format requested date"""
     if req_date == -1:
         req_date = str(df.index[-1].date())
-    print("******* [" + req_date + "] *******")
+    else:
+        req_date = f'{req_date:%Y-%m-%d}'
+    
+    """Print requested date close price and change%"""
+    shown_req_date = "******* [{}] *******".format(req_date)
     req_row = df.loc[req_date, selected_columns].round(2)
     for idx in tickers:
         close = req_row[('Close', idx)]
