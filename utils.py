@@ -62,5 +62,5 @@ def get_close_price(tickers, fetch_days):
     end_date = datetime.now()
     start_date = end_date - timedelta(days=fetch_days)
     stock = yf.Tickers(tickers)
-    df = stock.history(start=start_date, end=end_date)
+    df = stock.history(start=start_date, end=end_date, progress=False)
     return df
