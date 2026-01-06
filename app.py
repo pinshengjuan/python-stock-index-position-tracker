@@ -12,7 +12,7 @@ def calc_change_percentage(df, ticker_list):
         DataFrame: DataFrame with an additional column for percentage change.
     """
     close_filled = df['Close'].ffill()
-    change_percentage = (close_filled.pct_change() * 100).round(2).astype(str) + '%'
+    change_percentage = (close_filled.pct_change() * 100).round(2)
     for idx in ticker_list:
         df.loc[df.index, ('Change%', idx)] = change_percentage.loc[df.index, idx]
     return df
