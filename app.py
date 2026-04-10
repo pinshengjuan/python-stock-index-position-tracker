@@ -72,6 +72,7 @@ def main():
     """
     parser = argparse.ArgumentParser()
     parser.add_argument("-d", "--date", help="Specific date YYYY-MM-DD")
+    parser.add_argument("-c", "--compact", action="store_true", help="Compact output")
     args = parser.parse_args()
 
     config = load_config()
