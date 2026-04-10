@@ -18,6 +18,36 @@ def calc_change_percentage(df, ticker_list):
         df.loc[df.index, ('Change%', idx)] = change_percentage.loc[df.index, idx]
     return df
 
+def print_result_compact(tickers, req_date, fetch_days):
+    selected_columns = []
+    for index in tickers:
+        selected_columns.append(('Close', index))
+    df = get_close_price(tickers, fetch_days)
+    df = calc_change_percentage(df, tickers)
+
+    """Format requested date"""
+    if req_date == -1:
+        req_date = str(df.index[-1].date())
+    else:
+        req_date = f'{req_date:%Y-%m-%d}'
+    
+    """Print requested date close price and change%"""
+    pretty_date = make_pretty_date(req_date)
+    try:
+        req_row = df.loc[req_date, selected_columns].round(2)
+    except KeyError:
+        print(f"No data available for {req_date}")
+        del df
+        gc.collect()
+        return
+    print(f'\n{pretty_date}')
+
+    for idx in tickers:
+        close = req_row[('Close', idx)]
+        print(f'{close:.2f}\n', end='')
+    del df
+    gc.collect()
+
 def print_result(tickers, req_date, fetch_days):
     """
     Print the close prices and percentage change for the specified stock tickers.
@@ -88,8 +118,11 @@ def main():
     else:
         req_date = -1 #latest data
 
-    for idx in watchlist:
-        print_result(idx, req_date, fetch_days)
+    if args.compact:
+        print_result_compact(tickers, req_date, fetch_days)
+    else:
+        for idx in watchlist:
+            print_result(idx, req_date, fetch_days)
 
 if __name__ == '__main__':
     main()
