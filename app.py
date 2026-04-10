@@ -1,5 +1,6 @@
 import os
 import gc
+import argparse
 from utils import load_config, color_text, make_pretty_date, get_requested_date, get_close_price
 
 def calc_change_percentage(df, ticker_list):
@@ -69,6 +70,10 @@ def main():
     """
     Main function to execute the script.
     """
+    parser = argparse.ArgumentParser()
+    parser.add_argument("-d", "--date", help="Specific date YYYY-MM-DD")
+    args = parser.parse_args()
+
     config = load_config()
 
     fetch_days = config['FETCH_DAYS']
@@ -77,7 +82,10 @@ def main():
 
     watchlist = [tickers, indices]
 
-    req_date = get_requested_date(fetch_days)
+    if args.date:
+        req_date = get_requested_date(args.date, fetch_days)
+    else:
+        req_date = -1 #latest data
 
     for idx in watchlist:
         print_result(idx, req_date, fetch_days)

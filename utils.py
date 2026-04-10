@@ -48,33 +48,21 @@ def color_text(text: str, number: float) -> str:
     else:
         return f"{text:>10}"
 
-def get_requested_date(fetch_days):
+def get_requested_date(arg_req_date, fetch_days):
     """
-    Get the requested date for fetching stock data.
-    If a date is provided as a command line argument, validate it.
-    If no date is provided, use the latest available data.
+    Validate and convert the requested date string to a datetime object.
     Args:
+        arg_req_date (str): The requested date in YYYY-MM-DD format.
         fetch_days (int): Number of days to look back for fetching data.
     Returns:
-        datetime: The requested date for fetching data.
-    Raises:
-        SystemExit: If the provided date is invalid or out of range or format is incorrect.
+        datetime: The validated requested date as a datetime object.
     """
-    if len(sys.argv) > 2:
+    req_date = datetime.strptime(arg_req_date, "%Y-%m-%d")
+    now = datetime.now()
+    start = now - timedelta(days=fetch_days)
+    if req_date < start or req_date > now:
+        print(f"Request date {req_date} is out of range.")
         sys.exit()
-    elif len(sys.argv) == 2:
-        try:
-            req_date = datetime.strptime(sys.argv[1], "%Y-%m-%d")
-            now = datetime.now()
-            start = now - timedelta(days=fetch_days)
-            if req_date < start or req_date > now:
-                print(f"Request date {req_date} is out of range.")
-                sys.exit()
-        except ValueError:
-            print(f"Invalid argument: {sys.argv[1]}. Please provide an YYYY-mm-dd format for previous days.")
-            sys.exit()
-    else:
-        req_date = -1 #latest data
     return req_date
 
 def get_close_price(tickers, fetch_days):
