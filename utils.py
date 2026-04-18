@@ -1,24 +1,45 @@
-import os
 import sys
+import json
 import yfinance as yf
 from datetime import datetime, timedelta
 from typing import Any
-from dotenv import load_dotenv
+from pathlib import Path
 
-# Load environment variables from .env file
-load_dotenv()
-
-def load_config() -> dict[str, Any]:
+def load_config(config_name: str = "config.json") -> dict[str, Any]:
     """
-    Load configuration settings from environment variables or defaults.
-    Returns:
-        dict: Configuration settings.
+    Load configuration from a JSON file. 
+    Falls back to hardcoded defaults if the file is missing or invalid.
     """
-    return {
-        'TICKER_LIST': os.getenv('TICKER_LIST', 'GOOGL'),
-        'INDEX_LIST': os.getenv('INDEX_LIST', '^DJI'),
-        'FETCH_DAYS': int(os.getenv('DAYS', 60)),
+    # Define fallback defaults
+    default_config = {
+        'TICKER_LIST': ['GOOGL'],
+        'INDEX_LIST': ['^DJI'],
+        'FETCH_DAYS': 60,
     }
+
+    # Use Path for better cross-platform compatibility (macOS/Linux/Windows)
+    config_path = Path(__file__).parent / config_name
+
+    if not config_path.exists():
+        print(f"Warning: {config_name} not found. Falling back to defaults.")
+        return default_config
+
+    try:
+        with open(config_path, 'r', encoding='utf-8') as f:
+            user_config = json.load(f)
+            
+            # Merge user config into defaults to ensure all keys exist
+            final_config = {**default_config, **user_config}
+            
+            # print(f"Configuration successfully loaded from: {config_path}")
+            return final_config
+            
+    except json.JSONDecodeError as e:
+        print(f"Error: Failed to parse {config_name}. Invalid JSON format: {e}")
+        return default_config
+    except Exception as e:
+        print(f"Unexpected error loading config: {e}")
+        return default_config
 
 def make_pretty_date(date_str: str) -> str:
     """

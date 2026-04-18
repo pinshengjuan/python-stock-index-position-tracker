@@ -1,0 +1,5 @@
+{
+    "TICKER_LIST": "AAPL,ARM,NVDA",
+    "INDEX_LIST": "^DJI,^SPX,^IXIC,^SOX",
+    "FETCH_DAYS": 60
+}

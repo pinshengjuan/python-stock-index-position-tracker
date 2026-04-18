@@ -107,9 +107,9 @@ def main():
 
     config = load_config()
 
-    fetch_days = config['FETCH_DAYS']
-    tickers = config['TICKER_LIST'].upper().split(',')
-    indices = config['INDEX_LIST'].upper().split(',')
+    fetch_days = config.get('FETCH_DAYS')
+    tickers = config.get('TICKER_LIST').upper().split(',')
+    indices = config.get('INDEX_LIST').upper().split(',')
 
     watchlist = [tickers, indices]
 
